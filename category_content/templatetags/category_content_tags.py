@@ -2,7 +2,7 @@ from django import template
 from django.template import RequestContext, TemplateSyntaxError
 from django.template.loader import render_to_string
 from categories.views import get_category_for_path
-from content.models import Content
+from category_content.models import CategoryContent
 
 register = template.Library()
 
@@ -13,14 +13,14 @@ class ContentByCategoryNode(template.Node):
         self.category = category
         self.limit = limit
         self.random = random
-        self.model = Content
+        self.model = CategoryContent
 
     def render(self, context):
         if self.category is None:
             context[self.var_name] = None
             return ''
         try:
-            query = Content.published.filter(categories=self.category)
+            query = CategoryContent.published.filter(categories=self.category)
             if self.limit == -1:
                 context[self.var_name] = query.all()
             else:
