@@ -24,15 +24,15 @@ def get_sub_categories(self, category):
 
 class CategoryContentViewMixin(ContentViewMixin):
 
-    def get_context_data(self, **kwargs):
-        context = super(CategoryContentViewMixin, self).get_context_data(**kwargs)
+    def get_extra_data(self, **kwargs):
+        extra_data = {}
         try:
-            context['category'] = get_category_for_path(self.kwargs["path"])
-            self.category = context['category']
+            extra_data['category'] = get_category_for_path(self.kwargs["path"])
+            self.category = extra_data['category']
         except:
             raise Http404
 
-        return context
+        return extra_data
 
     def _get_templates(self, name):
         opts = self.object.get_real_instance()._meta

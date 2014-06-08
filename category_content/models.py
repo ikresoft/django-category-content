@@ -4,8 +4,12 @@ from django.utils.encoding import force_unicode
 from categories.fields import CategoryM2MField
 from content.models import Content
 
+from django.utils.translation import ugettext as _
+
 class CategoryContent(Content):
     categories = CategoryM2MField(null=True, blank=True)
+    allow_pings = models.BooleanField(_('Allow pings'), default=True)
+    is_sticky = models.BooleanField(default=False)
 
     @classmethod
     def get_path(cls, category):

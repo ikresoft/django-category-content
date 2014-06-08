@@ -9,24 +9,25 @@ from content import settings
 
 class CategoryContentAdmin(ChildAdmin):
     base_model = CategoryContent
+    quick_editable = (
+        'title',
+        'slug',
+        'password',
+        'private',
+        'categories',
+        'tags',
+    )
     fieldsets = (
         (None, {
-            'fields': ('title', 'subhead', 'tease_title',
-                       'teaser', 'body')
+            'fields': ('title', 'body')
         }),
         ('Categories', {
             'fields': ('categories',),
         }),
         (_('Post data'), {
             'fields': ('authors', 'non_staff_author',
-                       'status', 'origin', 'comment_status', )
+                       'status', 'origin', 'allow_comments', 'allow_pings', 'is_sticky')
         }),)
-
-    if settings.INCLUDE_PRINT:
-        fieldsets = fieldsets + (_('Print Information'), {
-            'fields': ('print_pub_date', 'print_section', 'print_page'),
-            'classes': ('collapse',),
-        })
 
     fieldsets = fieldsets + ((_('Advanced Options'), {
             'fields': ('slug', 'date_modified', 'site', ),

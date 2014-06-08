@@ -1,5 +1,5 @@
 from django import template
-from django.template import RequestContext
+from django.template import RequestContext, TemplateSyntaxError
 from django.template.loader import render_to_string
 from categories.views import get_category_for_path
 from content.models import Content
