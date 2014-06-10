@@ -1,14 +1,13 @@
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 
-from content.admin import ChildAdmin
+from content.admin import ContentAdmin
 from forms import CategoryContentForm
 from models import CategoryContent
 
 from content import settings
 
-class CategoryContentAdmin(ChildAdmin):
-    base_model = CategoryContent
+class CategoryContentAdmin(ContentAdmin):
     quick_editable = (
         'title',
         'slug',
