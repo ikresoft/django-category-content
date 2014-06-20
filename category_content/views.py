@@ -15,7 +15,7 @@ from models import CategoryContent
 from categories.views import get_category_for_path
 
 
-def get_sub_categories(self, category):
+def get_sub_categories(category):
     qs = category.get_descendants()
     categories = [category.pk]
     for node in qs:
@@ -24,29 +24,34 @@ def get_sub_categories(self, category):
 
 class CategoryContentViewMixin(ContentViewMixin):
 
+    def dispatch(self, request, *args, **kwargs):
+        if not hasattr(self, 'category'):
+            try:
+                self.category = get_category_for_path(self.kwargs["path"])
+            except:
+                raise Http404
+        return super(CategoryContentViewMixin, self).dispatch(request, *args, **kwargs)
+
     def get_extra_data(self, **kwargs):
         extra_data = {}
-        try:
-            extra_data['category'] = get_category_for_path(self.kwargs["path"])
-            self.category = extra_data['category']
-        except:
-            raise Http404
-
+        extra_data['category'] = self.category
         return extra_data
 
     def _get_templates(self, name):
-        opts = self.object.get_real_instance()._meta
+        opts = self.model._meta
         app_label = opts.app_label
         path = CategoryContent.get_path(self.category)
         return ["%s/%ss/%s/%s.html" % (app_label, opts.object_name.lower(), path, name)]
 
-class CategoryContentListView(ContentListView, CategoryContentViewMixin):
+class CategoryContentListView(CategoryContentViewMixin, ContentListView):
     model = CategoryContent
+
 
     def get_queryset(self):
         qs = super(CategoryContentListView, self).get_queryset()
         return qs.filter(categories__in=get_sub_categories(self.category))
 
 
-class CategoryContentDetailView(ContentDetailView, CategoryContentViewMixin):
+class CategoryContentDetailView(CategoryContentViewMixin, ContentDetailView):
     model = CategoryContent
+

@@ -17,6 +17,7 @@ class CategoryContent(Content):
         path = '/'.join([force_unicode(i.slug) for i in ancestors])
         return path
 
-    def get_absolute_url(self):
-        category = self.categories.all()[0]
+    def get_absolute_url(self, category=None):
+        if self.category is None:
+            category = self.categories.all()[0]
         return reverse('category_content_detail', args=[CategoryContent.get_path(category), self.slug])

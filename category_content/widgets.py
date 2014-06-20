@@ -7,7 +7,7 @@ class MpttTreeWidget(forms.SelectMultiple):
         super(MpttTreeWidget, self).__init__(attrs)
 
     def render(self, name, value, attrs=None, choices=()):
-        return render_to_string('content/widgets/MpttTreeWidget.html',
+        return render_to_string('category_content/widgets/MpttTreeWidget.html',
                 {'queryset': self.choices.queryset, 'STATIC_URL': settings.STATIC_URL, 'name': name, 'value': value,
                  'attrs': attrs})
 
