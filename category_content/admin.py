@@ -18,7 +18,11 @@ class CategoryContentAdmin(ContentAdmin):
     )
     fieldsets = (
         (None, {
-            'fields': ('title', 'body')
+            'fields': ('title',)
+        }),
+        (_('Content'), {
+            'fields': ('body',),
+            'classes': ('full-width',),
         }),
         ('Categories', {
             'fields': ('categories',),
