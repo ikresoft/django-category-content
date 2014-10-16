@@ -1,14 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
-from django.core.paginator import EmptyPage, InvalidPage
-from django.http import HttpResponseRedirect, Http404
-from django.template import RequestContext
-from django.utils.encoding import force_unicode
-from django.template.loader import find_template
-from django.template.base import TemplateDoesNotExist
-
-from content import settings
+from django.http import Http404
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.conf import settings
 from content.views import ContentListView, ContentDetailView, ContentViewMixin
 from models import CategoryContent
 
@@ -21,6 +15,7 @@ def get_sub_categories(category):
     for node in qs:
         categories.append(node.pk)
     return categories
+
 
 class CategoryContentViewMixin(ContentViewMixin):
 
@@ -43,15 +38,31 @@ class CategoryContentViewMixin(ContentViewMixin):
         path = CategoryContent.get_path(self.category)
         return ["%s/%ss/%s/%s.html" % (app_label, opts.object_name.lower(), path, name)]
 
+
 class CategoryContentListView(CategoryContentViewMixin, ContentListView):
     model = CategoryContent
 
+    def get_context_data(self, **kwargs):
+        context = super(CategoryContentListView, self).get_context_data(**kwargs)
+
+        paginator = Paginator(self.qs, settings.POSTS_PER_PAGE)
+        page = self.request.GET.get("page")
+        try:
+            posts = paginator.page(page)
+        except PageNotAnInteger:
+            posts = paginator.page(1)
+        except EmptyPage:
+            posts = paginator.page(paginator.num_pages)
+
+        context['object_list'] = posts
+        return context
 
     def get_queryset(self):
         qs = super(CategoryContentListView, self).get_queryset()
-        return qs.filter(categories__in=get_sub_categories(self.category))
+        self.qs = qs.filter(categories__in=get_sub_categories(self.category))
+
+        return qs
 
 
 class CategoryContentDetailView(CategoryContentViewMixin, ContentDetailView):
     model = CategoryContent
-
